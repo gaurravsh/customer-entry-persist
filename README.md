@@ -1,2 +1,6 @@
 # customer-entry-persist
-Lambda that reads customer data and persists it
+Lambda that reads customer data and persists it.
+
+------------
+
+The process is an `AWS Lambda Handler`. It will read the customer details and persist it to `Google Sheets` as well on `Mongodb` in format of Json document.
