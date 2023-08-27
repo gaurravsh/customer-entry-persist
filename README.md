@@ -1,4 +1,4 @@
-# customer-entry-persist
+# customer-entry-persist-lambda
 Lambda that reads customer data and persists it.
 
 ------------
