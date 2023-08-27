@@ -20,9 +20,9 @@ object ProcessInput {
       case e: RuntimeException =>
         throw new RuntimeException(e)
     }
-
+    persistOnMongodb(jsonBody)
     persistOnGoogleSheets(customerDetails)
-    persistOnMongodb(customerDetails)
+
 
 
   }
@@ -35,7 +35,7 @@ object ProcessInput {
     googleSheetClient.appendData (googleSheetId, s"$sheetName!A:Z", dataToInsert)
   }
 
-  private def persistOnMongodb(customerDetails: CustomerDetails) : Unit = {
+  private def persistOnMongodb(customerDetails: String) : Unit = {
     val mongodbClient = MongodbPersistenceClient.apply()
     mongodbClient.persistRecord(customerDetails)
   }

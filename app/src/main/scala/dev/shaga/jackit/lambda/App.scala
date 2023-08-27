@@ -3,7 +3,6 @@
  */
 package dev.shaga.jackit.lambda
 
-import dev.shaga.jackit.lambda.model.CustomerDetails
 import dev.shaga.jackit.lambda.process.ProcessInput
 
 object App {

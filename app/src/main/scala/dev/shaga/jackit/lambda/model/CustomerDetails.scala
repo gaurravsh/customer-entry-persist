@@ -1,34 +1,35 @@
 package dev.shaga.jackit.lambda.model
 
-class CustomerDetails(var visitType: String = "",
-                      var area: String = "",
-                      var pincode: String = "",
-                      var name: String = "",
-                      var contactNumber: String = "",
-                      var emailId: String = "",
-                      var phoneNumber: String = "",
-                      var customerType: String = "",
-                      var amc: String = "",
-                      var vehicleCompany: String = "",
-                      var vehicleModel: String = "",
-                      var vehicleColor: String = "",
-                      var bikeNumber: String = "",
-                      var bikeInsuranceExpiredYesOrNo: String = "",
-                      var insuranceExpiryDate: String = "",
-                      var insuranceCompanyName: String = "",
-                      var typeOfService: String = "",
-                      var partDetails: java.util.List[PartDetails] = new java.util.LinkedList[PartDetails] {},
-                      var totalAmount: String = "",
-                      var totalCost: String = "",
-                      var revenue: String = "",
-                      var profitMargin: String = "",
-                      var discount: String = "",
-                      var finalPayment: String ="",
-                      var dateOfService: String = "",
-                      var deliveryDate: String = "",
-                      var paymentStatus: String = "",
-                      var paymentMode: String = "",
-                      var mechanic: String = ""
+class CustomerDetails(visitType: String = "",
+                      area: String = "",
+                      pincode: String = "",
+                      name: String = "",
+                      contactNumber: String = "",
+                      emailId: String = "",
+                      phoneNumber: String = "",
+                      customerType: String = "",
+                      amc: String = "",
+                      vehicleCompany: String = "",
+                      vehicleModel: String = "",
+                      vehicleColor: String = "",
+                      bikeNumber: String = "",
+                      bikeInsuranceExpiredYesOrNo: String = "",
+                      insuranceExpiryDate: String = "",
+                      insuranceCompanyName: String = "",
+                      typeOfService: String = "",
+//                      partDetails: Array[PartDetails] = Array(),
+                      partDetails: java.util.List[PartDetails] = new java.util.LinkedList[PartDetails] {},
+                      totalAmount: String = "",
+                      totalCost: String = "",
+                      revenue: String = "",
+                      profitMargin: String = "",
+                      discount: String = "",
+                      finalPayment: String ="",
+                      dateOfService: String = "",
+                      deliveryDate: String = "",
+                      paymentStatus: String = "",
+                      paymentMode: String = "",
+                      mechanic: String = ""
                           ) {
 
   def this()  = this("")
@@ -62,10 +63,5 @@ class CustomerDetails(var visitType: String = "",
     result
   }
 }
-
-case class PartDetails(val partType: String = "",
-                       val amount:String = "",
-                       val cost: String= "")
-
 
 

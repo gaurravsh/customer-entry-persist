@@ -4,6 +4,16 @@
  * This generated file contains a sample Scala application project to get you started.
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.2.1/userguide/building_java_projects.html in the Gradle documentation.
  */
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.2"
+    }
+}
+
 
 plugins {
     // Apply the scala Plugin to add support for Scala.
@@ -37,12 +47,6 @@ dependencies {
     implementation('org.slf4j:slf4j-simple:1.7.36')
     implementation 'org.mongodb:mongodb-driver-sync:4.9.0'
 
-
-    // Use Scalatest for testing our library
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.scalatest:scalatest_2.13:3.2.15'
-    testImplementation 'org.scalatestplus:junit-4-13_2.13:3.2.2.0'
-
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -51,6 +55,7 @@ java {
         languageVersion = JavaLanguageVersion.of(8)
     }
 }
+apply plugin: 'com.github.johnrengelman.shadow'
 
 application {
     // Define the main class for the application.

@@ -2,15 +2,14 @@ package dev.shaga.jackit.lambda.persistence
 
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.{MongoClients, MongoDatabase}
-import dev.shaga.jackit.lambda.model.CustomerDetails
+import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 
 class MongodbPersistenceClient private (private val db: MongoDatabase, private val collectionName : String){
-  def persistRecord(record: CustomerDetails): Unit = {
-    val collection = db.getCollection(collectionName, classOf[CustomerDetails])
-    val insertionResult = collection.insertOne(record)
-
+  def persistRecord(recordAsJson: String): Unit = {
+    val pojoDocument = Document.parse(recordAsJson)
+    db.getCollection(collectionName).insertOne(pojoDocument)
   }
 }
 
@@ -24,7 +23,11 @@ object MongodbPersistenceClient {
 
     val mongoUrl = s"mongodb+srv://$mongodbUserName:$mongodbPwd@$mongodbHostName"
     val mongoClient = MongoClients.create(mongoUrl)
-    val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry, CodecRegistries.fromProviders(PojoCodecProvider.builder.automatic(true).build))
+
+    val pojoCodecRegistry = CodecRegistries
+      .fromRegistries(MongoClientSettings.getDefaultCodecRegistry,
+        CodecRegistries.fromProviders(PojoCodecProvider.builder.automatic(true).build)
+      )
     val db: MongoDatabase = mongoClient.getDatabase(mongodbDatabaseName).withCodecRegistry(pojoCodecRegistry)
     new MongodbPersistenceClient(db,customerDetailsCollectionName)
   }
