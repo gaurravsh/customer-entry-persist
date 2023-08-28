@@ -17,14 +17,18 @@ class GoogleSheetPersistenceClient private(private val sheets: Sheets){
   private val logger = LoggerFactory.getLogger(GoogleSheetPersistenceClient.getClass)
 
   def appendData(sheetId: String, range: String, dataList: java.util.List[java.util.List[AnyRef]]): Unit = {
-    logger.info("Going to update Price in Excel")
-    try sheets
-      .spreadsheets
-      .values
-      .append(sheetId, range, new ValueRange().setValues(dataList))
-      .setValueInputOption("USER_ENTERED")
-      .setIncludeValuesInResponse(true)
-      .execute
+    logger.info("Going to append the service details record now in Google Sheets. . .")
+    try {
+      sheets
+        .spreadsheets
+        .values
+        .append(sheetId, range, new ValueRange().setValues(dataList))
+        .setValueInputOption("USER_ENTERED")
+        .setIncludeValuesInResponse(true)
+        .execute
+
+      logger.info("Record appended in Google Sheets successfully!")
+    }
     catch {
       case e: IOException =>
         logger.error("Error while trying to update excel !!")
@@ -59,8 +63,11 @@ object GoogleSheetPersistenceClient {
   }
 
   def apply(): GoogleSheetPersistenceClient = {
+    logger.info("Going to create Google Sheets Client now . . . .")
     val sheets = new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport, JacksonFactory.getDefaultInstance, authorize(ServiceAccountConfig.apply())).setApplicationName("Customer Data").build
-    new GoogleSheetPersistenceClient(sheets)
+    val client = new GoogleSheetPersistenceClient(sheets)
+    logger.info("Google Sheets Client created successfully !")
+    client
   }
 
 
