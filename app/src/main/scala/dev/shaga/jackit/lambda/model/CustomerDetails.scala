@@ -1,6 +1,10 @@
 package dev.shaga.jackit.lambda.model
 
-class CustomerDetails(visitType: String = "",
+import org.slf4j.LoggerFactory
+
+import java.util
+
+case class CustomerDetails(visitType: String = "",
                       area: String = "",
                       pincode: String = "",
                       name: String = "",
@@ -17,7 +21,6 @@ class CustomerDetails(visitType: String = "",
                       insuranceExpiryDate: String = "",
                       insuranceCompanyName: String = "",
                       typeOfService: String = "",
-//                      partDetails: Array[PartDetails] = Array(),
                       partDetails: java.util.List[PartDetails] = new java.util.LinkedList[PartDetails] {},
                       totalAmount: String = "",
                       totalCost: String = "",
@@ -35,21 +38,35 @@ class CustomerDetails(visitType: String = "",
   def this()  = this("")
 
   def fetchAsListOfObject: java.util.List[java.util.List[Object]] = {
+    val logger = LoggerFactory.getLogger(classOf[CustomerDetails])
+
+
+    logger.info("Going to convert object to List[Object] . . . .")
     val result: java.util.List[java.util.List[Object]] = new java.util.LinkedList[java.util.List[Object]]()
     val firstRecord: java.util.List[Object] = new java.util.ArrayList[Object]()
-    val fields = this.getClass.getDeclaredFields
+    val fields = this.getClass.getDeclaredFields // This is not good approach, will have to change this. It was picking logger as well, and I had to take it out.
     fields.foreach(field => {
       if (!field.getName.equalsIgnoreCase("partDetails"))
         firstRecord.add(field.get(this).toString)
       else {
-        val firstPartDetail = field.get(this).asInstanceOf[java.util.List[PartDetails]].get(0)
-        firstRecord.add(firstPartDetail.partType)
-        firstRecord.add(firstPartDetail.amount)
-        firstRecord.add(firstPartDetail.cost)
+        val partDetails: util.List[PartDetails] = field.get(this).asInstanceOf[java.util.List[PartDetails]]
+        if(!partDetails.isEmpty){
+          val firstPartDetail = partDetails.get(0)
+          firstRecord.add(firstPartDetail.partType)
+          firstRecord.add(firstPartDetail.amount)
+          firstRecord.add(firstPartDetail.cost)
+        }
+        else{
+          firstRecord.add("-")
+          firstRecord.add("-")
+          firstRecord.add("-")
+        }
+
       }
 
     })
     result.add(firstRecord)
+    logger.info("First record converted !")
     val totalFieldCount = fields.length + 2
     1 until partDetails.size map (index => {
       val record: java.util.List[Object] = new java.util.ArrayList[Object](totalFieldCount)
@@ -60,6 +77,7 @@ class CustomerDetails(visitType: String = "",
       result.add(record)
       }
     )
+    logger.info("All records converted. Returning result !")
     result
   }
 }

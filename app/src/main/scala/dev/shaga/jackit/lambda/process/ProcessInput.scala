@@ -2,21 +2,18 @@ package dev.shaga.jackit.lambda.process
 
 import com.google.gson.Gson
 
-import java.nio.charset.StandardCharsets
-import java.util.Base64
 import dev.shaga.jackit.lambda.model.CustomerDetails
 import dev.shaga.jackit.lambda.persistence.{GoogleSheetPersistenceClient, MongodbPersistenceClient}
 import org.slf4j.{Logger, LoggerFactory}
+
+import java.util.concurrent.{ ExecutorService, Executors,  TimeUnit}
 
 object ProcessInput {
 
   private val logger: Logger = LoggerFactory.getLogger(ProcessInput.getClass)
 
-  def processJson(eventBody: String): Unit = {
-    val bytes = eventBody.getBytes(StandardCharsets.UTF_8)
-    val decoded = Base64.getDecoder.decode(bytes)
-    val jsonBody = new String(decoded, StandardCharsets.UTF_8)
-    logger.info("After decoding, the body looks like : {}",jsonBody)
+  def processJson(jsonBody: String): Unit = {
+    val t0 = System.currentTimeMillis()
     var customerDetails : CustomerDetails = null
     try
       customerDetails = new Gson().fromJson(jsonBody,classOf[CustomerDetails])
@@ -24,9 +21,20 @@ object ProcessInput {
       case e: RuntimeException =>
         throw new RuntimeException(e)
     }
-    persistOnMongodb(jsonBody)
-    persistOnGoogleSheets(customerDetails)
 
+    val service: ExecutorService = Executors.newFixedThreadPool(2)
+    val taskList: java.util.List[Runnable] = new java.util.LinkedList()
+    taskList.add(() => persistOnGoogleSheets(customerDetails))
+    taskList.add(() => persistOnMongodb(jsonBody))
+
+    service.submit(taskList.get(0))
+    service.submit(taskList.get(1))
+    TimeUnit.SECONDS.sleep(2)
+    service.shutdown()
+    service.awaitTermination(Long.MaxValue,TimeUnit.NANOSECONDS)
+    val t1 = System.currentTimeMillis()
+
+    logger.info(s"Total execution time = ${(t1-t0)/1000.0} seconds")
 
 
   }
@@ -36,7 +44,7 @@ object ProcessInput {
     val sheetName = sys.env ("SHEET_NAME")
     val googleSheetClient = GoogleSheetPersistenceClient.apply()
     val dataToInsert = customerDetails.fetchAsListOfObject
-    googleSheetClient.appendData (googleSheetId, s"$sheetName!A:Z", dataToInsert)
+    googleSheetClient.appendData (googleSheetId, s"$sheetName!A:A", dataToInsert)
   }
 
   private def persistOnMongodb(customerDetails: String) : Unit = {
